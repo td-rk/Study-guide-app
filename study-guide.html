@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#172c45">
+<title>Study Guide</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#202938;background:#f3f5f8;font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh}
+header{background:#172c45;color:#fff;padding:25px 20px 23px}
+.header-inner,main{width:min(760px,100%);margin:auto}
+.brand{font-size:12px;letter-spacing:.14em;color:#b8c8da;font-weight:700}
+h1{font-size:27px;margin:5px 0 4px}
+header p{margin:0;color:#d0dce9;font-size:14px}
+main{padding:22px 16px 48px}
+.panel{background:#fff;border:1px solid #e1e6ed;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px #15243a08}
+h2{font-size:17px;margin:0 0 15px}
+label{display:block;font-size:13px;font-weight:700;color:#485467;margin:0 0 7px}
+select,input,textarea{width:100%;font:inherit;color:#202938;background:#fff;border:1px solid #cbd3df;border-radius:10px;padding:12px}
+select:focus,input:focus,textarea:focus{outline:3px solid #dbeafe;border-color:#2563eb}
+.field{margin-bottom:16px}
+.result{background:#f7f9fc;border:1px solid #e3e9f1;border-radius:12px;padding:16px;margin-top:17px}
+.result h3{font-size:18px;margin:0 0 12px}
+ol{padding-left:23px;margin:0}
+li{padding:5px 0 7px 3px;line-height:1.55}
+.empty{color:#687386;font-size:14px;margin:0}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{font:inherit;font-weight:650;border:0;border-radius:10px;padding:11px 15px;cursor:pointer}
+.primary{background:#2563eb;color:white}
+.secondary{background:#edf1f6;color:#263449}
+.danger{background:#fff0f0;color:#b42318}
+button:active{transform:translateY(1px)}
+.top-actions{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.top-actions h2{margin:0}
+.small{font-size:12px;color:#687386;line-height:1.5}
+details summary{cursor:pointer;font-weight:700;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary:after{content:"＋";float:right;color:#64748b}
+details[open] summary:after{content:"－"}
+.editor{margin-top:18px;border-top:1px solid #e7ebf0;padding-top:18px}
+.editor-card{border:1px solid #e1e6ed;border-radius:12px;padding:14px;margin:12px 0}
+.editor-card h3{font-size:15px;margin:0 0 12px}
+.choice-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.choice-head strong{font-size:14px}
+textarea{min-height:110px;resize:vertical;line-height:1.5}
+.help{font-size:12px;color:#687386;margin:6px 0 0}
+.hidden{display:none!important}
+footer{text-align:center;color:#7b8492;font-size:12px;padding:4px 16px 28px}
+@media(max-width:480px){.panel{padding:16px}header{padding:22px 18px}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<header><div class="header-inner">
+  <div class="brand">PERSONAL WORKFLOW</div>
+  <h1>Study Guide</h1>
+  <p>今の状況を選ぶと、次に行う手順を表示します。</p>
+</div></header>
+<main>
+  <section class="panel">
+    <h2>状況を選択</h2>
+    <div class="field">
+      <label for="caseSelect">ケース</label>
+      <select id="caseSelect"></select>
+    </div>
+    <div class="field">
+      <label for="choiceSelect">具体的な状況</label>
+      <select id="choiceSelect"></select>
+    </div>
+    <div id="result" class="result" aria-live="polite"></div>
+  </section>
+
+  <section class="panel">
+    <details id="settings">
+      <summary>ケース・手順を編集</summary>
+      <p class="small">ケースを追加し、それぞれに選択肢と手順を登録できます。手順は1行につき1項目です。変更はこのブラウザに保存されます。</p>
+      <div class="editor">
+        <div class="field">
+          <label for="caseName">ケース名</label>
+          <input id="caseName" maxlength="80" placeholder="例：勉強開始">
+        </div>
+        <div class="actions">
+          <button class="primary" id="addCase">ケースを追加</button>
+          <button class="secondary" id="renameCase">選択中のケース名を変更</button>
+          <button class="danger" id="deleteCase">選択中のケースを削除</button>
+        </div>
+        <div class="editor-card">
+          <h3>選択中のケースの選択肢</h3>
+          <div class="field">
+            <label for="choiceName">選択肢名</label>
+            <input id="choiceName" maxlength="100" placeholder="例：勉強を始めたい">
+          </div>
+          <div class="field">
+            <label for="stepsInput">手順（1行につき1項目）</label>
+            <textarea id="stepsInput" placeholder="勉強開始チェックリストを実施&#10;3タスク方式でタスクを確定&#10;ポモドーロ時刻表を確認"></textarea>
+          </div>
+          <div class="actions">
+            <button class="primary" id="addChoice">選択肢を追加</button>
+            <button class="secondary" id="updateChoice">選択中の選択肢を更新</button>
+            <button class="danger" id="deleteChoice">選択中の選択肢を削除</button>
+          </div>
+          <p class="help">選択肢を追加すると、現在選択中のケースに登録されます。</p>
+        </div>
+        <div class="actions">
+          <button class="secondary" id="exportData">設定をバックアップ</button>
+          <button class="secondary" id="importButton">バックアップを読み込む</button>
+          <button class="danger" id="resetData">初期状態に戻す</button>
+          <input id="importFile" type="file" accept="application/json" class="hidden">
+        </div>
+      </div>
+    </details>
+  </section>
+</main>
+<footer>設定はこのブラウザ内に保存されます。</footer>
+<script>
+const STORAGE_KEY = "studyGuideData_v1";
+const defaultData = [
+  {id:"start", name:"勉強を始めたい", choices:[
+    {id:"start-now", name:"今から勉強を始める", steps:["勉強前チェックリストを実施する","3タスク方式でタスクを確定する","ポモドーロ時刻表を確認する","勉強を開始する"]},
+    {id:"start-difficult", name:"勉強を始められない", steps:["延期管理アプリを開く","延期中に行うことと終了時刻を入力する","延期を予約する","延期後チェックリストを実施する"]}
+  ]},
+  {id:"postpone", name:"勉強を延期したい", choices:[
+    {id:"postpone-now", name:"延期を予約する", steps:["延期管理アプリを開く","延期中に行うことを入力する","延期終了時刻を入力する","予約内容を確認して確定する","延期後チェックリストを実施する"]}
+  ]},
+  {id:"tasks", name:"今日のタスクを決めたい", choices:[
+    {id:"tasks-plan", name:"3つのタスクを設定する", steps:["3タスク方式アプリを開く","タスクを3つ入力する","各タスクの予定ポモドーロ数を設定する","内容を確認して確定する"]}
+  ]},
+  {id:"schedule", name:"勉強時間を計画したい", choices:[
+    {id:"schedule-plan", name:"ポモドーロ時刻表を作る", steps:["ポモドーロ時刻表アプリを開く","勉強・休憩の時間を入力する","開始時刻を設定する","表示された時刻表を確認する"]}
+  ]},
+  {id:"rest", name:"休憩に入りたい", choices:[
+    {id:"rest-now", name:"勉強から休憩に切り替える", steps:["勉強・休憩切替アプリを開く","休憩に切り替える"]}
+  ]}
+];
+let data = loadData();
+let selectedChoiceId = null;
+const $ = id => document.getElementById(id);
+function clone(v){return JSON.parse(JSON.stringify(v))}
+function loadData(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw)return clone(defaultData);
+    const parsed=JSON.parse(raw);
+    if(!Array.isArray(parsed))return clone(defaultData);
+    return parsed.map(c=>({id:String(c.id||makeId()),name:String(c.name||"名称未設定"),choices:Array.isArray(c.choices)?c.choices.map(x=>({id:String(x.id||makeId()),name:String(x.name||"名称未設定"),steps:Array.isArray(x.steps)?x.steps.map(String):[]})):[]}));
+  }catch(e){return clone(defaultData)}
+}
+function makeId(){return "id-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)}
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}
+function currentCase(){return data.find(c=>c.id===$("caseSelect").value)||null}
+function currentChoice(){const c=currentCase();return c?.choices.find(x=>x.id===$("choiceSelect").value)||null}
+function renderCases(preferredCase,preferredChoice){
+  const cs=$("caseSelect"); const old=preferredCase||cs.value;
+  cs.innerHTML="";
+  data.forEach(c=>{const o=document.createElement("option");o.value=c.id;o.textContent=c.name;cs.append(o)});
+  if(data.length===0){const o=document.createElement("option");o.value="";o.textContent="ケースがありません";cs.append(o)}
+  cs.value=data.some(c=>c.id===old)?old:(data[0]?.id||"");
+  renderChoices(preferredChoice);
+}
+function renderChoices(preferred){
+  const c=currentCase(), sel=$("choiceSelect");sel.innerHTML="";
+  if(!c||!c.choices.length){const o=document.createElement("option");o.value="";o.textContent="選択肢がありません";sel.append(o);selectedChoiceId=null;renderResult();return}
+  c.choices.forEach(x=>{const o=document.createElement("option");o.value=x.id;o.textContent=x.name;sel.append(o)});
+  sel.value=c.choices.some(x=>x.id===preferred)?preferred:c.choices[0].id;
+  selectedChoiceId=sel.value;renderResult();
+}
+function renderResult(){
+  const x=currentChoice(), box=$("result");box.replaceChildren();
+  if(!x){const p=document.createElement("p");p.className="empty";p.textContent="このケースには選択肢が登録されていません。編集から追加できます。";box.append(p);return}
+  const h=document.createElement("h3");h.textContent=x.name;box.append(h);
+  if(!x.steps.length){const p=document.createElement("p");p.className="empty";p.textContent="手順はまだ登録されていません。";box.append(p);return}
+  const ol=document.createElement("ol");
+  x.steps.forEach(s=>{const li=document.createElement("li");li.textContent=s;ol.append(li)});
+  box.append(ol);
+}
+$("caseSelect").addEventListener("change",()=>renderChoices());
+$("choiceSelect").addEventListener("change",()=>{selectedChoiceId=$("choiceSelect").value;renderResult();loadEditor()});
+function loadEditor(){
+  const c=currentCase(),x=currentChoice();
+  $("caseName").value=c?.name||"";
+  $("choiceName").value=x?.name||"";
+  $("stepsInput").value=x?.steps.join("\n")||"";
+}
+$("caseSelect").addEventListener("change",loadEditor);
+$("addCase").onclick=()=>{
+  const name=$("caseName").value.trim();if(!name){alert("ケース名を入力してください。");return}
+  const c={id:makeId(),name,choices:[]};data.push(c);save();renderCases(c.id);loadEditor();$("caseName").value="";
+};
+$("renameCase").onclick=()=>{
+  const c=currentCase(),name=$("caseName").value.trim();if(!c)return alert("変更するケースがありません。");if(!name)return alert("ケース名を入力してください。");
+  c.name=name;save();renderCases(c.id,$("choiceSelect").value);loadEditor();
+};
+$("deleteCase").onclick=()=>{
+  const c=currentCase();if(!c)return;
+  if(!confirm(`「${c.name}」を削除しますか？このケースの選択肢と手順も削除されます。`))return;
+  data=data.filter(x=>x.id!==c.id);save();renderCases();loadEditor();
+};
+$("addChoice").onclick=()=>{
+  const c=currentCase();if(!c)return alert("先にケースを追加してください。");
+  const name=$("choiceName").value.trim();if(!name)return alert("選択肢名を入力してください。");
+  const steps=$("stepsInput").value.split("\n").map(s=>s.trim()).filter(Boolean);
+  const x={id:makeId(),name,steps};c.choices.push(x);save();renderCases(c.id,x.id);loadEditor();
+};
+$("updateChoice").onclick=()=>{
+  const c=currentCase(),x=currentChoice();if(!c||!x)return alert("更新する選択肢がありません。");
+  const name=$("choiceName").value.trim();if(!name)return alert("選択肢名を入力してください。");
+  x.name=name;x.steps=$("stepsInput").value.split("\n").map(s=>s.trim()).filter(Boolean);
+  save();renderCases(c.id,x.id);loadEditor();
+};
+$("deleteChoice").onclick=()=>{
+  const c=currentCase(),x=currentChoice();if(!c||!x)return alert("削除する選択肢がありません。");
+  if(!confirm(`「${x.name}」を削除しますか？`))return;
+  c.choices=c.choices.filter(y=>y.id!==x.id);save();renderCases(c.id);loadEditor();
+};
+$("exportData").onclick=()=>{
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="study-guide-backup.json";a.click();URL.revokeObjectURL(url);
+};
+$("importButton").onclick=()=>$("importFile").click();
+$("importFile").onchange=async e=>{
+  const file=e.target.files[0];if(!file)return;
+  try{
+    const parsed=JSON.parse(await file.text());
+    if(!Array.isArray(parsed)||!parsed.every(c=>c&&typeof c.name==="string"&&Array.isArray(c.choices)))throw new Error();
+    data=parsed.map(c=>({id:String(c.id||makeId()),name:c.name,choices:c.choices.map(x=>({id:String(x.id||makeId()),name:String(x.name||""),steps:Array.isArray(x.steps)?x.steps.map(String):[]}))}));
+    save();renderCases();loadEditor();alert("バックアップを読み込みました。");
+  }catch(err){alert("読み込めませんでした。正しいバックアップファイルを選択してください。")}
+  e.target.value="";
+};
+$("resetData").onclick=()=>{
+  if(!confirm("登録したケース・選択肢・手順を初期状態に戻しますか？"))return;
+  data=clone(defaultData);save();renderCases();loadEditor();
+};
+renderCases();loadEditor();
+</script>
+</body>
+</html>
